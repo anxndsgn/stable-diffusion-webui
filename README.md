@@ -25,9 +25,10 @@ bash webui.sh
 
 This script will then automatically download the required files, back up the original v1_inference.yaml file and replace it with the version needed to start our [taiyi model](https://huggingface.co/IDEA-CCNL/Taiyi-Stable-Diffusion-1B-Chinese-v0.1 ). 
 
-**Notice that**, the total size of all the files needed for taiyi model is over 10G, the step:  
-"Cloning taiyi_model into repositories/Taiyi-Stable-Diffusion-1B-Chinese-v0.1..." will take lots of time, please be patient.
+**Notice that**, if you choose to redownload the Taiyi model, the total size of all the files needed is over 10G, the step:  
+"Cloning taiyi_model into repositories/Taiyi-Stable-Diffusion-1B-Chinese-v0.1..." will take lots of time, please be patient.  
 
+If you have already downloaded our whole Taiyi model in [https://huggingface.co/IDEA-CCNL/Taiyi-Stable-Diffusion-1B-Chinese-v0.1]() once, follow the path checker and choose "(2)move your downloaded Taiyi model path?", and move your downloaded model folder to ./repositories/Taiyi-Stable-Diffusion-1B-Chinese-v0.1.
 
 After all the progress is done, the web-ui service will be started on port 12345.
 

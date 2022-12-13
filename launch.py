@@ -222,23 +222,79 @@ def prepare_enviroment():
         tests(test_argv)
         exit(0)
 
+def taiyi_model_dir_checker(pre_path):
+    dir_list = [
+        'feature_extractor/preprocessor_config.json', 
+        'safety_checker/config.json', 'safety_checker/pytorch_model.bin',
+        'scheduler/scheduler_config.json', 
+        'text_encoder/config.json', 'text_encoder/pytorch_model.bin',
+        'tokenizer/special_tokens_map.json', 'tokenizer/tokenizer_config.json', 'tokenizer/vocab.txt',
+        'unet/config.json', 'unet/diffusion_pytorch_model.bin', 
+        'vae/config.json', 'vae/diffusion_pytorch_model.bin', 
+        'model_index.json',
+        'Taiyi-Stable-Diffusion-1B-Chinese-v0.1.ckpt'
+    ]
+    checker = True
+    for d in dir_list:
+        if not os.path.exists(os.path.join(pre_path, d)):
+            checker = False
+            print(os.path.join(pre_path, d)+' | File missing.')
+            break
+    return checker
+
 def download_replace():
     taiyi_model = os.environ.get('taiyi_model', "https://huggingface.co/IDEA-CCNL/Taiyi-Stable-Diffusion-1B-Chinese-v0.1")
-    git_clone(taiyi_model, repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1'), "taiyi_model")
 
-    if os.path.exists(os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml'):
-        os.rename(os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml', os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference_backup.yaml')
-    if os.path.exists(os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules.py'):
-        os.rename(os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules.py', os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules_backup.py')
+    if not taiyi_model_dir_checker(repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')):
+        while True:
+            option = input(repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')+' does not exist or file is missing. (1)Do you want to redownload the Taiyi model? Or (2)move your downloaded Taiyi model path? 1/2: ')
+            if option == '1':
+                git_clone(taiyi_model, repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1'), "taiyi_model")
+            elif option == '2':
+                while True:
+                    choice_option = input('Please move the Taiyi model to: '+repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')+'. Completed? y: ')
+                    if choice_option == 'y':
+                        if not taiyi_model_dir_checker(repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')):
+                            print('Detection failed, please reconfirm that the model has been moved to: '+repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1'))
+                        else:
+                            break
+                    else:
+                        print('Invalid input, please re-enter')
+            else:
+                print('Invalid input, please re-enter')
+            
+            if option == '2':
+                if choice_option == 'y':
+                    break
+
+    origin_yaml = os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml'
+    origin_yaml_bu = os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference_backup.yaml'
+    taiyi_yaml = os.getcwd()+'/repositories/stable-diffusion-taiyi/configs/stable-diffusion/v1-inference.yaml'
+
+    origin_modules = os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules.py'
+    origin_modules_bu = os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules_backup.py'
+    taiyi_modules = os.getcwd()+'/repositories/stable-diffusion-taiyi/ldm/modules/encoders/modules.py'
+
+    if os.path.exists(origin_yaml):
+        if os.path.exists(origin_yaml_bu):
+            pass
+        else:
+            os.rename(origin_yaml, origin_yaml_bu)
     
-    shutil.copyfile(os.getcwd()+'/repositories/stable-diffusion-taiyi/configs/stable-diffusion/v1-inference.yaml', os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml')
+    if os.path.exists(origin_modules):
+        if os.path.exists(origin_modules_bu):
+            pass
+        else:
+            os.rename(origin_modules, origin_modules_bu)
+    
+    shutil.copyfile(taiyi_yaml, origin_yaml)
 
-    yaml = open(os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml', 'r').readlines()
-    with open(os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml', 'w') as fw:
+    yaml = open(origin_yaml, 'r').readlines()
+    with open(origin_yaml, 'w') as fw:
         for line in yaml:
             fw.write(line.replace("version: your_path/Taiyi-Stable-Diffusion-1B-Chinese-v0.1", "version: " + os.getcwd() + "/repositories/Taiyi-Stable-Diffusion-1B-Chinese-v0.1"))
 
-    shutil.copyfile(os.getcwd()+'/repositories/stable-diffusion-taiyi/ldm/modules/encoders/modules.py',os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules.py')
+    shutil.copyfile(taiyi_modules, origin_modules)
 
     os.system('cd repositories/stable-diffusion')
     os.system('pip install -e .')
