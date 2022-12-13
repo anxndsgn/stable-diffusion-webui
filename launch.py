@@ -307,7 +307,7 @@ def start():
     if '--listen' not in sys.argv:
         sys.argv += ['--listen']
     if '--port' not in sys.argv:
-        sys.argv += ['--port', '12345']
+        sys.argv += ['--port', '12375']
     print(f"Launching {'API server' if '--nowebui' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
     import webui
     if '--nowebui' in sys.argv:
