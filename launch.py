@@ -238,7 +238,7 @@ def taiyi_model_dir_checker(pre_path):
     for d in dir_list:
         if not os.path.exists(os.path.join(pre_path, d)):
             checker = False
-            print(os.path.join(pre_path, d)+'文件缺失。')
+            print(os.path.join(pre_path, d)+' | File missing.')
             break
     return checker
 
@@ -247,23 +247,23 @@ def download_replace():
 
     if not taiyi_model_dir_checker(repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')):
         while True:
-            option = input(repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')+'路径不存在或有文件缺失，是否要重新下载Taiyi模型？ y/n：')
-            if option == 'y':
+            option = input(repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')+' does not exist or file is missing. (1)Do you want to redownload the Taiyi model? Or (2)move your downloaded Taiyi model path? 1/2: ')
+            if option == '1':
                 git_clone(taiyi_model, repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1'), "taiyi_model")
-            elif option == 'n':
+            elif option == '2':
                 while True:
-                    choice_option = input('请将模型移动到路径：'+repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')+'。 是否已完成？ y：')
+                    choice_option = input('Please move the Taiyi model to: '+repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')+'. Completed? y: ')
                     if choice_option == 'y':
                         if not taiyi_model_dir_checker(repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')):
-                            print('检测失败，请重新确认是否已将模型移动到路径：'+repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1'))
+                            print('Detection failed, please reconfirm that the model has been moved to: '+repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1'))
                         else:
                             break
                     else:
-                        print('输入无效，请重新输入')
+                        print('Invalid input, please re-enter')
             else:
-                print('输入无效，请重新输入')
+                print('Invalid input, please re-enter')
             
-            if option == 'n':
+            if option == '2':
                 if choice_option == 'y':
                     break
 
@@ -307,7 +307,7 @@ def start():
     if '--listen' not in sys.argv:
         sys.argv += ['--listen']
     if '--port' not in sys.argv:
-        sys.argv += ['--port', '12375']
+        sys.argv += ['--port', '12345']
     print(f"Launching {'API server' if '--nowebui' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
     import webui
     if '--nowebui' in sys.argv:
