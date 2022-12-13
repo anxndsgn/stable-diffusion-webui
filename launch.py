@@ -260,13 +260,13 @@ def tests(argv):
     proc.kill()
 
 def start():
-    print(f"Launching {'API server' if '--nowebui' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
     if '--ckpt' not in sys.argv:
         sys.argv += ['--ckpt', os.getcwd()+'/repositories/Taiyi-Stable-Diffusion-1B-Chinese-v0.1/Taiyi-Stable-Diffusion-1B-Chinese-v0.1.ckpt']
     if '--listen' not in sys.argv:
         sys.argv += ['--listen']
     if '--port' not in sys.argv:
         sys.argv += ['--port', '12345']
+    print(f"Launching {'API server' if '--nowebui' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
     import webui
     if '--nowebui' in sys.argv:
         webui.api_only()
