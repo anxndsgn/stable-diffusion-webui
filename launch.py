@@ -237,7 +237,6 @@ def tests(argv):
     print(f"Stopping Web UI process with id {proc.pid}")
     proc.kill()
 
-
 def start():
     print(f"Launching {'API server' if '--nowebui' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
     import webui
