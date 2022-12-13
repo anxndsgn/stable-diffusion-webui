@@ -25,7 +25,8 @@ bash webui.sh
 
 This script will then automatically download the required files, back up the original v1_inference.yaml file and replace it with the version needed to start our [taiyi model](https://huggingface.co/IDEA-CCNL/Taiyi-Stable-Diffusion-1B-Chinese-v0.1 ). After all the progress is done, the web-ui service will be started on port 12345.
 
-After that, you can run the following command to to start the web-ui service
+
+You can run the following command to start the web-ui service.
 
 ```
 python launch.py --ckpt local_path/Taiyi-Stable-Diffusion-1B-Chinese-EN-v0.1.ckpt --listen --port 12345
