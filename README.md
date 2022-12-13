@@ -11,7 +11,7 @@ Make sure the requirement at least, very helpful.
 Since Taiyi's text_encoder has been modified (BertModel vs CLIPTextModel), and webui currently only supports stable diffusion in English, it is necessary to use the webui project modified by Fengshenbang's own fork.
 
 ```
-git clone -b dev_zhangyuxiang https://github.com/IDEA-CCNL/stable-diffusion-webui.git
+git clone https://github.com/IDEA-CCNL/stable-diffusion-webui.git
 cd stable-diffusion-webui
 ```
 
