@@ -267,20 +267,34 @@ def download_replace():
                 if choice_option == 'y':
                     break
 
-    #git_clone(taiyi_model, repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1'), "taiyi_model")
-    if os.path.exists(os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml'):
-        os.rename(os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml', os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference_backup.yaml')
-    if os.path.exists(os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules.py'):
-        os.rename(os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules.py', os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules_backup.py')
-    
-    shutil.copyfile(os.getcwd()+'/repositories/stable-diffusion-taiyi/configs/stable-diffusion/v1-inference.yaml', os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml')
+    origin_yaml = os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml'
+    origin_yaml_bu = os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference_backup.yaml'
+    taiyi_yaml = os.getcwd()+'/repositories/stable-diffusion-taiyi/configs/stable-diffusion/v1-inference.yaml'
 
-    yaml = open(os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml', 'r').readlines()
-    with open(os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml', 'w') as fw:
+    origin_modules = os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules.py'
+    origin_modules_bu = os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules_backup.py'
+    taiyi_modules = os.getcwd()+'/repositories/stable-diffusion-taiyi/ldm/modules/encoders/modules.py'
+
+    if os.path.exists(origin_yaml):
+        if os.path.exists(origin_yaml_bu):
+            pass
+        else:
+            os.rename(origin_yaml, origin_yaml_bu)
+    
+    if os.path.exists(origin_modules):
+        if os.path.exists(origin_modules_bu):
+            pass
+        else:
+            os.rename(origin_modules, origin_modules_bu)
+    
+    shutil.copyfile(taiyi_yaml, origin_yaml)
+
+    yaml = open(origin_yaml, 'r').readlines()
+    with open(origin_yaml, 'w') as fw:
         for line in yaml:
             fw.write(line.replace("version: your_path/Taiyi-Stable-Diffusion-1B-Chinese-v0.1", "version: " + os.getcwd() + "/repositories/Taiyi-Stable-Diffusion-1B-Chinese-v0.1"))
 
-    shutil.copyfile(os.getcwd()+'/repositories/stable-diffusion-taiyi/ldm/modules/encoders/modules.py',os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules.py')
+    shutil.copyfile(taiyi_modules, origin_modules)
 
     os.system('cd repositories/stable-diffusion')
     os.system('pip install -e .')
@@ -307,7 +321,7 @@ def start():
     if '--listen' not in sys.argv:
         sys.argv += ['--listen']
     if '--port' not in sys.argv:
-        sys.argv += ['--port', '12375']
+        sys.argv += ['--port', '12345']
     print(f"Launching {'API server' if '--nowebui' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
     import webui
     if '--nowebui' in sys.argv:
