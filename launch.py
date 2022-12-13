@@ -222,10 +222,52 @@ def prepare_enviroment():
         tests(test_argv)
         exit(0)
 
+def taiyi_model_dir_checker(pre_path):
+    dir_list = [
+        'feature_extractor/preprocessor_config.json', 
+        'safety_checker/config.json', 'safety_checker/pytorch_model.bin',
+        'scheduler/scheduler_config.json', 
+        'text_encoder/config.json', 'text_encoder/pytorch_model.bin',
+        'tokenizer/special_tokens_map.json', 'tokenizer/tokenizer_config.json', 'tokenizer/vocab.txt',
+        'unet/config.json', 'unet/diffusion_pytorch_model.bin', 
+        'vae/config.json', 'vae/diffusion_pytorch_model.bin', 
+        'model_index.json',
+        'Taiyi-Stable-Diffusion-1B-Chinese-v0.1.ckpt'
+    ]
+    checker = True
+    for d in dir_list:
+        if not os.path.exists(os.path.join(pre_path, d)):
+            checker = False
+            print(os.path.join(pre_path, d)+'文件缺失。')
+            break
+    return checker
+
 def download_replace():
     taiyi_model = os.environ.get('taiyi_model', "https://huggingface.co/IDEA-CCNL/Taiyi-Stable-Diffusion-1B-Chinese-v0.1")
-    git_clone(taiyi_model, repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1'), "taiyi_model")
 
+    if not taiyi_model_dir_checker(repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')):
+        while True:
+            option = input(repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')+'路径不存在或有文件缺失，是否要重新下载Taiyi模型？ y/n：')
+            if option == 'y':
+                git_clone(taiyi_model, repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1'), "taiyi_model")
+            elif option == 'n':
+                while True:
+                    choice_option = input('请将模型移动到路径：'+repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')+'。 是否已完成？ y：')
+                    if choice_option == 'y':
+                        if not taiyi_model_dir_checker(repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1')):
+                            print('检测失败，请重新确认是否已将模型移动到路径：'+repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1'))
+                        else:
+                            break
+                    else:
+                        print('输入无效，请重新输入')
+            else:
+                print('输入无效，请重新输入')
+            
+            if option == 'n':
+                if choice_option == 'y':
+                    break
+
+    #git_clone(taiyi_model, repo_dir('Taiyi-Stable-Diffusion-1B-Chinese-v0.1'), "taiyi_model")
     if os.path.exists(os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml'):
         os.rename(os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference.yaml', os.getcwd()+'/repositories/stable-diffusion/configs/stable-diffusion/v1-inference_backup.yaml')
     if os.path.exists(os.getcwd()+'/repositories/stable-diffusion/ldm/modules/encoders/modules.py'):
@@ -265,7 +307,7 @@ def start():
     if '--listen' not in sys.argv:
         sys.argv += ['--listen']
     if '--port' not in sys.argv:
-        sys.argv += ['--port', '12345']
+        sys.argv += ['--port', '12375']
     print(f"Launching {'API server' if '--nowebui' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
     import webui
     if '--nowebui' in sys.argv:
